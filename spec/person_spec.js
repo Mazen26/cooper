@@ -14,4 +14,9 @@ describe("Person", function() {
         expect(person.gender).toBeDefined();
         expect(person.age).toEqual(36);
     });
+
+    // it("should have cooper test results", function() {
+    //     person.performance(2300);
+    //     expect(person.result).toEqual("Above Average");
+    // });
 });
