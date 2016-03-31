@@ -1,114 +1,35 @@
 cooper_norms = {
   'male' : {
-    '13-14': {
-      '>2700':     'Excellent',
-      '2400-2699': 'Above Average',
-      '2200-2399': 'Average',
-      '2100-2199': 'Below Average',
-      '<2100':     'Poor'
-    },
-    '15-16': {
-      '>2800':     'Excellent',
-      '2500-2800': 'Above Average',
-      '2300-2499': 'Average',
-      '2200-2299': 'Below Average',
-      '<2200':     'Poor'
-    },
-    '17-19': {
-      '>3000':     'Excellent',
-      '2700-3000': 'Above Average',
-      '2500-2699': 'Average',
-      '2300-2499': 'Below Average',
-      '<2300':     'Poor'
-    },
-    '20-29': {
-      '>2800':     'Excellent',
-      '2400-2800': 'Above Average',
-      '2200-2399': 'Average',
-      '1600-2199': 'Below Average',
-      '<1600':     'Poor'
-    },
-    '30-39': {
-      '>2700':     'Excellent',
-      '2300-2700': 'Above Average',
-      '1900-2299': 'Average',
-      '1500-1999': 'Below Average',
-      '<1500':     'Poor'
-    },
-    '40-49': {
-      '>2500':     'Excellent',
-      '2100-2500': 'Above Average',
-      '1700-2099': 'Average',
-      '1400-1699': 'Below Average',
-      '<1400':     'Poor'
-    },
-    '50+': {
-      '>2400':     'Excellent',
-      '2000-2400': 'Above Average',
-      '1600-1999': 'Average',
-      '1300-1599': 'Below Average',
-      '<1300':     'Poor'
-    }
+    '13-14': ['>2700', '2400-2699', '2200-2399', '2100-2199', '<2100'],
+    '15-16': ['>2800', '2500-2799', '2300-2499', '2200-2299', '<2200'],
+    '17-19': ['>3000', '2700-2999', '2500-2699', '2300-2499', '<2300'],
+    '20-29': ['>2800', '2400-2799', '2200-2399', '1600-2199', '<1600'],
+    '30-39': ['>2700', '2300-2699', '1900-2299', '1500-1999', '<1500'],
+    '40-49': ['>2500', '2100-2499', '1700-2099', '1400-1699', '<1400'],
+    '50+':   ['>2400', '2000-2399', '1600-1999', '1300-1599', '<1300']
   },
 
   'female' : {
-    '13-14': {
-      '>2000':     'Excellent',
-      '1900-2000': 'Above Average',
-      '1600-1899': 'Average',
-      '1500-1599': 'Below Average',
-      '<1500':     'Poor'
-    },
-    '15-16': {
-      '>2100':     'Excellent',
-      '2000-2100': 'Above Average',
-      '1700-1999': 'Average',
-      '1600-1699': 'Below Average',
-      '<1600':     'Poor'
-    },
-    '17-19': {
-      '>2300':     'Excellent',
-      '2100-2300': 'Above Average',
-      '1800-2099': 'Average',
-      '1700-1799': 'Below Average',
-      '<1700':     'Poor'
-    },
-    '20-29': {
-      '>2700':     'Excellent',
-      '2200-2700': 'Above Average',
-      '1800-2199': 'Average',
-      '1500-1799': 'Below Average',
-      '<1500':     'Poor'
-    },
-    '30-39': {
-      '>2500':     'Excellent',
-      '2000-2500': 'Above Average',
-      '1700-1999': 'Average',
-      '1400-1699': 'Below Average',
-      '<1400':     'Poor'
-    },
-    '40-49': {
-      '>2300':     'Excellent',
-      '1900-2300': 'Above Average',
-      '1500-1899': 'Average',
-      '1200-1499': 'Below Average',
-      '<1200':     'Poor'
-    },
-    '50+': {
-      '>2200':     'Excellent',
-      '1700-2200': 'Above Average',
-      '1400-1699': 'Average',
-      '1100-1399': 'Below Average',
-      '<1100':     'Poor'
-    }
+    '13-14': ['>2000', '1900-1999', '1600-1899', '1500-1599', '<1500'],
+    '15-16': ['>2100', '2000-2099', '1700-1999', '1600-1699', '<1600'],
+    '17-19': ['>2300', '2100-2299', '1800-2099', '1700-1799', '<1700'],
+    '20-29': ['>2700', '2200-2699', '1800-2199', '1500-1799', '<1500'],
+    '30-39': ['>2500', '2000-2499', '1700-1999', '1400-1699', '<1400'],
+    '40-49': ['>2300', '1900-2299', '1500-1899', '1200-1499', '<1200'],
+    '50+':   ['>2200', '1700-2199', '1400-1699', '1100-1399', '<1100']
   }
 };
 
+ratings = {
+  1: 'Excellent',
+  2: 'Above Average',
+  3: 'Average',
+  4: 'Below Average',
+  5: 'Poor'
+};
+
 var cooperAssessmentOf = function(person, distance) {
-  a_range = ageRange(person.age);
-  console.log(cooper_norms[person.gender][a_range]);
-  console.log(ratings[4]);
-  return "Excellent";
+  return ratings[getRatingIndex(person, distance)];
 };
 
 var ageRange = function(age) {
@@ -129,5 +50,27 @@ var ageRange = function(age) {
       return '50+';
     default:
       return 'invalid_range';
+  }
+};
+
+var getRatingIndex = function(person, distance) {
+  a_range = ageRange(person.age);
+  distance_ranges = cooper_norms[person.gender][a_range];
+
+  for (var index = 0; index < distance_ranges.length; index++) {
+    d_range = distance_ranges[index];
+
+    if (d_range.match(/>\d*/) && (distance >= parseInt(d_range.slice(1)))) {
+      return index + 1;
+    } else if (d_range.match(/<\d*/) && (distance < parseInt(d_range.slice(1)))) {
+      return index + 1;
+    } else {
+      min_max = d_range.split('-');
+      min = parseInt(min_max[0]);
+      max = parseInt(min_max[1]);
+
+      if (distance >= min && distance <= max)
+        return index + 1;
+    }
   }
 };
